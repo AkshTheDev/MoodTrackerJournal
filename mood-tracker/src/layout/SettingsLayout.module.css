@@ -1,0 +1,279 @@
+.container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.pageTitle {
+  color: var(--accent-brown);
+  margin-bottom: 2rem;
+  font-size: 2rem;
+}
+
+.settingsCard {
+  background-color: var(--background-color);
+  border-radius: 1rem;
+  padding: 2rem;
+  box-shadow: 0 4px 12px var(--shadow-color);
+  margin-bottom: 2rem;
+}
+
+.settingsCard h2 {
+  color: var(--accent-brown);
+  margin-bottom: 1.5rem;
+  font-size: 1.5rem;
+}
+
+.settingItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 0;
+  border-bottom: 1px solid var(--shadow-color);
+}
+
+.settingItem:last-child {
+  border-bottom: none;
+}
+
+.settingLabel {
+  font-weight: 600;
+  color: var(--text-color);
+  margin-bottom: 0.25rem;
+}
+
+.settingDescription {
+  color: var(--text-color);
+  opacity: 0.7;
+  font-size: 0.9rem;
+}
+
+.profileSection {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.avatarSection {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+}
+
+.profileImage {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid var(--accent-sage);
+  box-shadow: 0 2px 8px var(--shadow-color);
+  transition: transform 0.2s;
+}
+
+.profileImage:hover {
+  transform: scale(1.05);
+}
+
+.avatarButtons {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.uploadButton {
+  padding: 0.75rem 1.5rem;
+  border-radius: 2rem;
+  border: 2px solid var(--accent-sage);
+  background-color: var(--background-color);
+  color: var(--text-color);
+  cursor: pointer;
+  transition: all 0.2s;
+  font-weight: 500;
+}
+
+.uploadButton:hover:not(:disabled) {
+  background-color: var(--accent-sage);
+  transform: translateY(-2px);
+}
+
+.uploadButton:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.nameInputGroup {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.nameInput {
+  padding: 0.75rem 1rem;
+  border: 2px solid var(--accent-sage);
+  border-radius: 0.5rem;
+  background-color: var(--background-color);
+  color: var(--text-color);
+  font-size: 1rem;
+  transition: border-color 0.2s;
+  width: 250px;
+}
+
+.nameInput:focus {
+  outline: none;
+  border-color: var(--accent-brown);
+}
+
+.saveButton {
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 2rem;
+  background-color: var(--accent-sage);
+  color: var(--text-color);
+  cursor: pointer;
+  transition: all 0.2s;
+  font-weight: 500;
+}
+
+.saveButton:hover:not(:disabled) {
+  transform: translateY(-2px);
+  background-color: var(--accent-brown);
+}
+
+.saveButton:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.toggle {
+  position: relative;
+  width: 60px;
+  height: 34px;
+  background-color: var(--background-color);
+  border: 2px solid var(--accent-sage);
+  border-radius: 34px;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.toggle.active {
+  background-color: var(--accent-sage);
+}
+
+.toggleHandle {
+  position: absolute;
+  content: '';
+  height: 26px;
+  width: 26px;
+  left: 2px;
+  bottom: 2px;
+  background-color: var(--background-color);
+  border-radius: 50%;
+  transition: transform 0.3s;
+  box-shadow: 0 2px 4px var(--shadow-color);
+}
+
+.toggle.active .toggleHandle {
+  transform: translateX(26px);
+  background-color: var(--background-color);
+}
+
+.notificationSettings {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.timeInput {
+  padding: 0.5rem;
+  border: 2px solid var(--accent-sage);
+  border-radius: 0.5rem;
+  background-color: var(--background-color);
+  color: var(--text-color);
+  cursor: pointer;
+  transition: border-color 0.2s;
+}
+
+.timeInput:focus {
+  outline: none;
+  border-color: var(--accent-brown);
+}
+
+.exportButton {
+  background-color: var(--accent-sage);
+  color: var(--text-color);
+  padding: 0.75rem 1.5rem;
+  border-radius: 2rem;
+  border: none;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.exportButton:hover:not(:disabled) {
+  transform: translateY(-2px);
+  background-color: var(--accent-brown);
+}
+
+.exportButton:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.logoutButton {
+  padding: 0.75rem 1.5rem;
+  border: 2px solid var(--angry-color);
+  border-radius: 2rem;
+  background-color: transparent;
+  color: var(--angry-color);
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.logoutButton:hover {
+  background-color: var(--angry-color);
+  color: var(--background-color);
+}
+
+@media (max-width: 768px) {
+  .container {
+    padding: 1rem;
+  }
+
+  .settingsCard {
+    padding: 1.5rem;
+  }
+
+  .avatarSection {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .settingItem {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .nameInputGroup {
+    width: 100%;
+  }
+
+  .nameInput {
+    flex: 1;
+    width: auto;
+  }
+
+  .notificationSettings {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .timeInput {
+    width: 120px;
+  }
+}

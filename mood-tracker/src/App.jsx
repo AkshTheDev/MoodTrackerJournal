@@ -1,27 +1,104 @@
-import {BrowserRouter, Routes, Route} from 'react-router-dom'
-import './App.css'
-import { lazy } from 'react'
+import React, { useState, Suspense } from 'react';
+import { BrowserRouter as Router, Routes, Route, NavLink } from 'react-router-dom';
+import HomeLayout from './layout/HomeLayout';
+import LogMoodLayout from './layout/LogMoodLayout';
+import JournalLayout from './layout/JournalLayout';
+import HistoryLayout from './layout/HistoryLayout';
+import SettingsLayout from './layout/SettingsLayout';
+import MobileDrawer from './components/MobileDrawer';
+import ProtectedRoute from './components/ProtectedRoute';
+import ErrorBoundary from './components/ErrorBoundary';
+import Login from './pages/Login';
+import { AuthProvider } from './context/AuthContext';
+import { useTheme } from './hooks/useTheme';
+import LoadingSpinner from './components/LoadingSpinner';
+import './App.css';
 
-const Home = lazy(() => import('./pages/Home'))
-const LogMood = lazy(() => import('./pages/LogMood'))
-const Journal = lazy(() => import('./pages/Journal'))
-const History = lazy(() => import('./pages/History'))
-
-function App() {
-  
+function AppContent() {
+  const { isDarkMode } = useTheme();
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
   return (
-   <div>
-    <BrowserRouter>
-    <Routes>
-      <Route path='/' element={<Home />} />
-      <Route path='/LogMood' element={<LogMood />} />
-      <Route path='/Journal' element={<Journal />} />
-      <Route path='/History' element={<History />} />
-    </Routes>
-    </BrowserRouter>
-   </div>
-  )
+    <div className={`app ${isDarkMode ? 'dark' : 'light'}`}>
+      <nav className="nav">
+        <div className="logo">MindScribe</div>
+        <div className="nav-links">
+          <NavLink to="/" end>
+            Home
+          </NavLink>
+          <NavLink to="/log-mood">
+            Log Mood
+          </NavLink>
+          <NavLink to="/journal">
+            Journal
+          </NavLink>
+          <NavLink to="/history">
+            History
+          </NavLink>
+          <NavLink to="/settings">
+            Settings
+          </NavLink>
+        </div>
+        <button 
+          className="menu-toggle"
+          onClick={() => setIsDrawerOpen(true)}
+          aria-label="Toggle menu"
+        >
+          ☰
+        </button>
+      </nav>
+
+      <MobileDrawer 
+        isOpen={isDrawerOpen} 
+        onClose={() => setIsDrawerOpen(false)} 
+      />
+
+      <main className="main-content">
+        <Suspense fallback={<LoadingSpinner />}>
+          <Routes>
+            <Route path="/login" element={<Login />} />
+            <Route path="/" element={
+              <ProtectedRoute>
+                <HomeLayout darkMode={isDarkMode} />
+              </ProtectedRoute>
+            } />
+            <Route path="/log-mood" element={
+              <ProtectedRoute>
+                <LogMoodLayout />
+              </ProtectedRoute>
+            } />
+            <Route path="/journal" element={
+              <ProtectedRoute>
+                <JournalLayout />
+              </ProtectedRoute>
+            } />
+            <Route path="/history" element={
+              <ProtectedRoute>
+                <HistoryLayout />
+              </ProtectedRoute>
+            } />
+            <Route path="/settings" element={
+              <ProtectedRoute>
+                <SettingsLayout />
+              </ProtectedRoute>
+            } />
+          </Routes>
+        </Suspense>
+      </main>
+    </div>
+  );
 }
 
-export default App
+function App() {
+  return (
+    <ErrorBoundary>
+      <AuthProvider>
+        <Router>
+          <AppContent />
+        </Router>
+      </AuthProvider>
+    </ErrorBoundary>
+  );
+}
+
+export default App;

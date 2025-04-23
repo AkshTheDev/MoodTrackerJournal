@@ -1,0 +1,281 @@
+.container {
+  max-width: 1200px;
+  margin: 2rem auto;
+  padding: 0 2rem;
+}
+
+.header {
+  margin-bottom: 2rem;
+}
+
+.filters {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.select {
+  padding: 0.75rem;
+  border: 2px solid var(--accent-sage);
+  border-radius: 0.5rem;
+  background: var(--background-color);
+  color: var(--text-color);
+  cursor: pointer;
+}
+
+.dateRangePicker {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+}
+
+.dateRangeButton {
+  padding: 0.5rem 1.5rem;
+  border-radius: 2rem;
+  border: 2px solid var(--accent-sage);
+  background-color: var(--background-color);
+  color: var(--text-color);
+  cursor: pointer;
+  transition: background-color 0.2s, transform 0.2s;
+}
+
+.dateRangeButton:hover {
+  transform: translateY(-2px);
+}
+
+.dateRangeButton.active {
+  background-color: var(--accent-sage);
+  color: var(--background-color);
+}
+
+.charts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+  margin-bottom: 3rem;
+}
+
+.chartCard {
+  background: var(--background-color);
+  border-radius: 1rem;
+  padding: 1.5rem;
+  box-shadow: 0 4px 12px var(--shadow-color);
+}
+
+.chartTitle {
+  font-size: 1.2rem;
+  font-weight: bold;
+  margin-bottom: 1rem;
+  color: var(--accent-brown);
+}
+
+.chart {
+  width: 100%;
+  height: 300px;
+  position: relative;
+}
+
+/* Activity Insights Styles */
+.insights {
+  margin-bottom: 3rem;
+}
+
+.insights h2 {
+  color: var(--accent-brown);
+  margin-bottom: 1.5rem;
+}
+
+.activityGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+}
+
+.activityCard {
+  background: var(--background-color);
+  padding: 1.5rem;
+  border-radius: 1rem;
+  box-shadow: 0 4px 12px var(--shadow-color);
+  transition: transform 0.2s;
+}
+
+.activityCard:hover {
+  transform: translateY(-4px);
+}
+
+.activityCard h4 {
+  color: var(--accent-brown);
+  margin-bottom: 1rem;
+  font-size: 1.2rem;
+}
+
+.activityStats p {
+  margin-bottom: 0.5rem;
+  color: var(--text-color);
+}
+
+.moodBars {
+  margin-top: 1rem;
+  background: var(--shadow-color);
+  border-radius: 0.5rem;
+  overflow: hidden;
+  height: 8px;
+  display: flex;
+}
+
+.moodBar {
+  height: 100%;
+  transition: width 0.3s ease;
+}
+
+/* Recent Entries Styles */
+.entries {
+  margin-top: 3rem;
+}
+
+.entries h2 {
+  color: var(--accent-brown);
+  margin-bottom: 1.5rem;
+}
+
+.entriesGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+}
+
+.entryCard {
+  background: var(--background-color);
+  padding: 1.5rem;
+  border-radius: 1rem;
+  box-shadow: 0 4px 12px var(--shadow-color);
+  transition: transform 0.2s;
+  position: relative;
+}
+
+.entryCard:hover {
+  transform: translateY(-4px);
+}
+
+.entryHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.entryDate {
+  color: var(--text-color);
+  opacity: 0.8;
+  font-size: 0.9rem;
+}
+
+.entryMood {
+  font-size: 1.5rem;
+}
+
+.entryActivities {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 1rem 0;
+}
+
+.activityTag {
+  background: var(--accent-sage);
+  color: var(--background-color);
+  padding: 0.25rem 0.75rem;
+  border-radius: 1rem;
+  font-size: 0.85rem;
+}
+
+.entryNote {
+  color: var(--text-color);
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+.moodLogTable {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 2rem;
+  background-color: var(--background-color);
+  border-radius: 1rem;
+  overflow: hidden;
+  box-shadow: 0 4px 12px var(--shadow-color);
+}
+
+.moodLogTable th,
+.moodLogTable td {
+  padding: 1rem;
+  text-align: left;
+  border-bottom: 1px solid var(--shadow-color);
+}
+
+.moodLogTable th {
+  background-color: var(--accent-sage);
+  color: var(--background-color);
+  font-weight: 600;
+}
+
+.moodLogTable tr:hover {
+  background-color: var(--shadow-color);
+}
+
+.expandedRow {
+  background-color: var(--background-color);
+  padding: 1rem;
+}
+
+.expandedContent {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  padding: 1rem;
+  background-color: var(--background-color);
+  border-radius: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.moodEmoji {
+  font-size: 1.5rem;
+  margin-right: 0.5rem;
+  vertical-align: middle;
+}
+
+.linkedJournal {
+  color: var(--accent-sage);
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.linkedJournal:hover {
+  text-decoration: underline;
+}
+
+@media (max-width: 768px) {
+  .container {
+    padding: 1rem;
+  }
+  
+  .filters {
+    flex-direction: column;
+  }
+  
+  .chartsContainer {
+    grid-template-columns: 1fr;
+  }
+  
+  .activityGrid,
+  .entriesGrid {
+    grid-template-columns: 1fr;
+  }
+  
+  .moodLogTable {
+    display: block;
+    overflow-x: auto;
+  }
+}

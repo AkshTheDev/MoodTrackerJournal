@@ -1,0 +1,74 @@
+.drawer-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+}
+
+.drawer {
+  position: fixed;
+  top: 0;
+  right: -300px;
+  width: 300px;
+  height: 100vh;
+  background-color: var(--background-color);
+  box-shadow: -2px 0 8px var(--shadow-color);
+  z-index: 1001;
+  transition: transform 0.3s ease-in-out;
+  display: flex;
+  flex-direction: column;
+}
+
+.drawer.open {
+  transform: translateX(-300px);
+}
+
+.drawer-header {
+  padding: 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--shadow-color);
+}
+
+.drawer-logo {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: var(--accent-brown);
+}
+
+.drawer-close {
+  background: none;
+  border: none;
+  font-size: 2rem;
+  color: var(--text-color);
+  cursor: pointer;
+  padding: 0.5rem;
+}
+
+.drawer-nav {
+  display: flex;
+  flex-direction: column;
+  padding: 1rem;
+}
+
+.drawer-nav a {
+  text-decoration: none;
+  color: var(--text-color);
+  padding: 1rem;
+  margin-bottom: 0.5rem;
+  border-radius: 0.5rem;
+  transition: background-color 0.2s;
+}
+
+.drawer-nav a:hover {
+  background-color: var(--shadow-color);
+}
+
+.drawer-nav a.active {
+  background-color: var(--accent-sage);
+  color: var(--background-color);
+}

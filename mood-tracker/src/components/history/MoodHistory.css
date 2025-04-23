@@ -1,0 +1,124 @@
+.mood-history {
+  padding: 2rem;
+}
+
+.charts-section {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+  margin-bottom: 3rem;
+}
+
+.chart-card {
+  background-color: var(--background-color);
+  border-radius: 1rem;
+  padding: 1.5rem;
+  box-shadow: 0 4px 12px var(--shadow-color);
+}
+
+.chart-card h3 {
+  margin-bottom: 1rem;
+  color: var(--accent-brown);
+}
+
+.chart {
+  height: 300px;
+  position: relative;
+}
+
+.entries-section {
+  margin-top: 2rem;
+}
+
+.entries-section h3 {
+  margin-bottom: 2rem;
+  color: var(--accent-brown);
+}
+
+.date-group {
+  margin-bottom: 2rem;
+}
+
+.date-header {
+  color: var(--text-color);
+  font-size: 1.2rem;
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid var(--accent-sage);
+}
+
+.entries-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.5rem;
+}
+
+.entry-card {
+  background-color: var(--background-color);
+  border-radius: 1rem;
+  padding: 1.5rem;
+  box-shadow: 0 4px 12px var(--shadow-color);
+  transition: transform 0.2s;
+}
+
+.entry-card:hover {
+  transform: translateY(-4px);
+}
+
+.entry-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.entry-time {
+  color: var(--text-color);
+  opacity: 0.8;
+  font-size: 0.9rem;
+}
+
+.entry-mood {
+  font-size: 1.5rem;
+}
+
+.entry-intensity {
+  color: var(--accent-sage);
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+.entry-activities {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.activity-tag {
+  background-color: var(--accent-sage);
+  color: var(--background-color);
+  padding: 0.25rem 0.75rem;
+  border-radius: 1rem;
+  font-size: 0.85rem;
+}
+
+.entry-note {
+  color: var(--text-color);
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+@media (max-width: 768px) {
+  .mood-history {
+    padding: 1rem;
+  }
+
+  .charts-section {
+    grid-template-columns: 1fr;
+  }
+
+  .entries-grid {
+    grid-template-columns: 1fr;
+  }
+}

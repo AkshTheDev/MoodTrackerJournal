@@ -1,9 +1,9 @@
 import React from 'react'
 import HomeLayout from '../layout/HomeLayout'
-function Home() {
+function Home({darkMode}) {
   return (
     <div>
-      <HomeLayout />
+      <HomeLayout darkMode={darkMode} />
     </div>
   )
 }

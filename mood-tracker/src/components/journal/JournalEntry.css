@@ -1,0 +1,223 @@
+.journal-entry {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.title-input {
+  width: 100%;
+  padding: 1rem;
+  font-size: 1.5rem;
+  border: none;
+  border-bottom: 2px solid var(--accent-sage);
+  background-color: var(--background-color);
+  color: var(--text-color);
+  transition: border-color 0.2s;
+}
+
+.title-input:focus {
+  outline: none;
+  border-color: var(--accent-brown);
+}
+
+.mood-selector {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.mood-selector span {
+  color: var(--text-color);
+  font-weight: 500;
+}
+
+.mood-options {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.mood-button {
+  padding: 0.75rem 1.5rem;
+  border: 2px solid var(--accent-sage);
+  border-radius: 2rem;
+  background-color: var(--background-color);
+  color: var(--text-color);
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.mood-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 2px 8px var(--shadow-color);
+}
+
+.mood-button.selected {
+  background-color: var(--accent-sage);
+  color: var(--background-color);
+  border-color: transparent;
+}
+
+.content-input {
+  width: 100%;
+  min-height: 300px;
+  padding: 1rem;
+  border: 2px solid var(--accent-sage);
+  border-radius: 0.5rem;
+  background-color: var(--background-color);
+  color: var(--text-color);
+  resize: vertical;
+  font-family: inherit;
+  line-height: 1.6;
+  transition: border-color 0.2s;
+}
+
+.content-input:focus {
+  outline: none;
+  border-color: var(--accent-brown);
+}
+
+.tags-section {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.tags-input {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.tags-input input {
+  flex: 1;
+  padding: 0.75rem;
+  border: 2px solid var(--accent-sage);
+  border-radius: 0.5rem;
+  background-color: var(--background-color);
+  color: var(--text-color);
+}
+
+.tags-input input:focus {
+  outline: none;
+  border-color: var(--accent-brown);
+}
+
+.tags-input button {
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 0.5rem;
+  background-color: var(--accent-sage);
+  color: var(--text-color);
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.tags-input button:hover {
+  background-color: var(--accent-brown);
+}
+
+.tags-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.tag {
+  padding: 0.5rem 1rem;
+  background-color: var(--accent-sage);
+  color: var(--background-color);
+  border-radius: 1rem;
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.tag button {
+  background: none;
+  border: none;
+  color: var(--background-color);
+  font-size: 1.2rem;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  transition: background-color 0.2s;
+}
+
+.tag button:hover {
+  background-color: rgba(0, 0, 0, 0.1);
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.cancel-button,
+.save-button {
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 2rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.2s, background-color 0.2s;
+}
+
+.cancel-button {
+  background-color: var(--background-color);
+  color: var(--text-color);
+  border: 2px solid var(--accent-sage);
+}
+
+.cancel-button:hover {
+  background-color: var(--accent-sage);
+  color: var(--background-color);
+}
+
+.save-button {
+  background-color: var(--accent-sage);
+  color: var(--text-color);
+}
+
+.save-button:hover {
+  transform: translateY(-2px);
+  background-color: var(--accent-brown);
+}
+
+@media (max-width: 768px) {
+  .journal-entry {
+    padding: 1rem;
+  }
+
+  .mood-options {
+    flex-direction: column;
+  }
+
+  .mood-button {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .actions {
+    flex-direction: column;
+  }
+
+  .cancel-button,
+  .save-button {
+    width: 100%;
+  }
+}
