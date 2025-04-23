@@ -258,5 +258,109 @@ export const deleteJournalEntry = async (id) => {
   return true;
 };
 
+// Add this function after the initializeProfile function
+export const ensureStorageBucket = async () => {
+  console.log('SupabaseClient: Checking storage bucket');
+  try {
+    // Check if the bucket exists
+    const { data: buckets, error: listError } = await supabase.storage.listBuckets();
+    
+    if (listError) {
+      console.error('SupabaseClient: Error listing buckets:', listError);
+      return { success: false, message: `Error listing buckets: ${listError.message}` };
+    }
+    
+    console.log('SupabaseClient: Available buckets:', buckets);
+    
+    // If bucket doesn't exist, attempt to create it
+    if (!buckets || !buckets.find(b => b.name === 'profile-images')) {
+      console.log('SupabaseClient: Bucket "profile-images" not found, checking permissions');
+      
+      try {
+        // First try to list files to check permissions
+        const { data: testData, error: testError } = await supabase.storage
+          .from('profile-images')
+          .list();
+          
+        if (testError && testError.message.includes('bucket not found')) {
+          console.log('SupabaseClient: Bucket not found. Please create it in the Supabase dashboard.');
+          return { 
+            success: false, 
+            message: 'Storage bucket "profile-images" not found. Please create it in the Supabase dashboard and set it to public.' 
+          };
+        }
+        
+        return { success: true, buckets };
+      } catch (err) {
+        console.error('SupabaseClient: Error checking bucket:', err);
+        return { 
+          success: false, 
+          message: `Error checking bucket: ${err.message}. Please ensure the bucket exists in the Supabase dashboard.` 
+        };
+      }
+    }
+    
+    return { success: true, buckets };
+  } catch (error) {
+    console.error('SupabaseClient: Error ensuring storage bucket:', error);
+    return { success: false, message: `Error ensuring storage bucket: ${error.message}` };
+  }
+};
+
+// Modified function to upload a profile image
+export const uploadProfileImage = async (file, userId) => {
+  console.log('SupabaseClient: Uploading profile image for user:', userId);
+  
+  // First check that the bucket exists
+  const bucketCheck = await ensureStorageBucket();
+  if (!bucketCheck.success) {
+    console.error('SupabaseClient: Bucket check failed:', bucketCheck.message);
+    return { success: false, message: bucketCheck.message };
+  }
+  
+  try {
+    // Validate file
+    if (!file) {
+      return { success: false, message: 'No file provided' };
+    }
+    
+    const fileExt = file.name.split('.').pop();
+    const fileName = `${userId}-${Date.now()}.${fileExt}`;
+    const filePath = `${fileName}`;
+    
+    console.log(`SupabaseClient: Uploading file ${fileName} to profile-images bucket`);
+    
+    // Upload file
+    const { data: uploadData, error: uploadError } = await supabase.storage
+      .from('profile-images')
+      .upload(filePath, file, {
+        cacheControl: '3600',
+        upsert: true
+      });
+      
+    if (uploadError) {
+      console.error('SupabaseClient: Upload error:', uploadError);
+      return { 
+        success: false, 
+        message: `Upload failed: ${uploadError.message}. Please check storage permissions.` 
+      };
+    }
+    
+    console.log('SupabaseClient: File uploaded successfully:', uploadData);
+    
+    // Get public URL
+    const { data: { publicUrl } } = supabase.storage
+      .from('profile-images')
+      .getPublicUrl(filePath);
+      
+    console.log('SupabaseClient: Public URL generated:', publicUrl);
+    
+    return { success: true, publicUrl };
+  } catch (error) {
+    console.error('SupabaseClient: Error in profile image upload:', error);
+    return { success: false, message: `Error uploading image: ${error.message}` };
+  }
+};
+
 // Export the supabase instance
 export { supabase };

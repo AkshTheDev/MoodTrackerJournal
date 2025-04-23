@@ -2,7 +2,9 @@ import React, { useState, useRef, useEffect } from 'react';
 import style from './SettingsLayout.module.css';
 import { useTheme } from '../hooks/useTheme';
 import { useAuth } from '../context/AuthContext';
-import { supabase, getUserProfile, updateUserProfile } from '../lib/SupabaseClient';
+import { supabase, getUserProfile, updateUserProfile, uploadProfileImage } from '../lib/SupabaseClient';
+import { jsPDF } from 'jspdf';
+import autoTable from 'jspdf-autotable';
 
 function SettingsLayout() {
   const { isDarkMode, toggleTheme } = useTheme();
@@ -38,36 +40,7 @@ function SettingsLayout() {
 
     try {
       setIsSaving(true);
-      console.log('Starting image upload process...');
       
-      // Check if storage bucket exists
-      console.log('Checking storage buckets...');
-      const { data: buckets, error: bucketError } = await supabase.storage.listBuckets();
-      
-      if (bucketError) {
-        console.error('Error listing buckets:', bucketError);
-        throw new Error('Failed to access storage: ' + bucketError.message);
-      }
-      
-      console.log('Available buckets:', buckets);
-      
-      // Check if we have permission to list buckets
-      if (!buckets) {
-        throw new Error('No buckets found. Please check your Supabase storage permissions.');
-      }
-
-      const profileImagesBucket = buckets.find(b => b.name === 'profile-images');
-      console.log('Profile images bucket:', profileImagesBucket);
-
-      if (!profileImagesBucket) {
-        throw new Error(
-          'Profile images bucket not found. Please ensure:\n' +
-          '1. The bucket is named exactly "profile-images"\n' +
-          '2. The bucket is set to "Public"\n' +
-          '3. You have the correct storage permissions'
-        );
-      }
-
       // Validate file type
       const validTypes = ['image/jpeg', 'image/png', 'image/gif'];
       if (!validTypes.includes(file.type)) {
@@ -79,83 +52,25 @@ function SettingsLayout() {
       if (file.size > maxSize) {
         throw new Error('Image size should be less than 5MB');
       }
-
-      const fileExt = file.name.split('.').pop();
-      const fileName = `${user.id}-${Math.random()}.${fileExt}`;
-      const filePath = `${fileName}`;
-
-      console.log('Uploading file:', { 
-        fileName, 
-        filePath, 
-        fileType: file.type, 
-        fileSize: file.size,
-        userId: user.id 
-      });
-
-      // First, try to delete any existing image for this user
-      try {
-        const { data: existingFiles, error: listError } = await supabase.storage
-          .from('profile-images')
-          .list();
-        
-        if (listError) {
-          console.error('Error listing existing files:', listError);
-        } else {
-          console.log('Existing files:', existingFiles);
-          const userFiles = existingFiles?.filter(f => f.name.startsWith(user.id));
-          if (userFiles?.length > 0) {
-            console.log('Found existing files:', userFiles);
-            const { error: deleteError } = await supabase.storage
-              .from('profile-images')
-              .remove(userFiles.map(f => f.name));
-            
-            if (deleteError) {
-              console.warn('Error deleting existing files:', deleteError);
-            } else {
-              console.log('Successfully deleted existing files');
-            }
-          }
-        }
-      } catch (deleteError) {
-        console.warn('Error during cleanup of existing files:', deleteError);
+      
+      // Use the new helper function to upload the image
+      const result = await uploadProfileImage(file, user.id);
+      
+      if (!result.success) {
+        throw new Error(result.message);
+      }
+      
+      // Update the profile with the new image URL
+      const updateResult = await updateUserProfile(user.id, { avatar_url: result.publicUrl });
+      if (!updateResult) {
+        throw new Error('Failed to update profile. Please try again.');
       }
 
-      // Upload the new file
-      console.log('Uploading new file...');
-      const { error: uploadError } = await supabase.storage
-        .from('profile-images')
-        .upload(filePath, file, {
-          cacheControl: '3600',
-          upsert: true
-        });
-
-      if (uploadError) {
-        console.error('Upload error:', uploadError);
-        throw new Error('Failed to upload image: ' + uploadError.message);
-      }
-
-      console.log('File uploaded successfully, getting public URL');
-
-      const { data: { publicUrl } } = supabase.storage
-        .from('profile-images')
-        .getPublicUrl(filePath);
-
-      console.log('Public URL generated:', publicUrl);
-
-      // Update the profile
-      console.log('Updating user profile with new avatar URL...');
-      const updateResult = await updateUserProfile(user.id, { avatar_url: publicUrl });
-      console.log('Profile update result:', updateResult);
-
-      if (updateResult) {
-        setProfileImage(publicUrl);
-        console.log('Profile image state updated successfully');
-      } else {
-        throw new Error('Failed to update profile with new image URL');
-      }
+      setProfileImage(result.publicUrl);
+      alert('Profile image updated successfully!');
     } catch (error) {
       console.error('Error in handleImageUpload:', error);
-      alert(error.message || 'Failed to upload image. Please try again.');
+      alert(error.message || 'An unexpected error occurred. Please try again.');
     } finally {
       setIsSaving(false);
     }
@@ -204,21 +119,123 @@ function SettingsLayout() {
 
       if (moodError || journalError) throw moodError || journalError;
 
-      const exportData = {
-        mood_entries: moodData,
-        journal_entries: journalData,
-        exported_at: new Date().toISOString()
-      };
-
-      const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = 'mindscribe-data.json';
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
+      // Create PDF document
+      const doc = new jsPDF();
+      // Add autotable to document
+      autoTable(doc, {});
+      
+      const userProfile = await getUserProfile(user.id);
+      const userName = userProfile?.display_name || 'User';
+      
+      // Add title
+      doc.setFontSize(22);
+      doc.setTextColor(44, 62, 80);
+      doc.text('MindScribe: Your Mood Journal', 105, 15, { align: 'center' });
+      
+      // Add user info
+      doc.setFontSize(14);
+      doc.setTextColor(52, 73, 94);
+      doc.text(`Exported for: ${userName}`, 105, 25, { align: 'center' });
+      doc.text(`Date: ${new Date().toLocaleDateString()}`, 105, 32, { align: 'center' });
+      
+      // Add mood entries section
+      doc.setFontSize(18);
+      doc.setTextColor(41, 128, 185);
+      doc.text('Your Mood Entries', 14, 45);
+      
+      if (moodData && moodData.length > 0) {
+        // Format mood data for table
+        const moodTableData = moodData.map(entry => [
+          new Date(entry.date).toLocaleDateString(),
+          entry.mood,
+          entry.intensity ? `${entry.intensity}/10` : 'N/A',
+          entry.note || 'No notes'
+        ]);
+        
+        // Add mood entries table
+        autoTable(doc, {
+          startY: 50,
+          head: [['Date', 'Mood', 'Intensity', 'Notes']],
+          body: moodTableData,
+          theme: 'grid',
+          headStyles: { 
+            fillColor: [41, 128, 185],
+            textColor: 255,
+            fontStyle: 'bold'
+          },
+          alternateRowStyles: { fillColor: [240, 240, 240] },
+          margin: { top: 50 }
+        });
+      } else {
+        doc.setFontSize(12);
+        doc.setTextColor(100, 100, 100);
+        doc.text('No mood entries found.', 14, 55);
+      }
+      
+      // Add journal entries section
+      const currentY = doc.lastAutoTable ? doc.lastAutoTable.finalY + 20 : 60;
+      
+      // Check if we need a new page
+      if (currentY > 240) {
+        doc.addPage();
+        doc.setFontSize(18);
+        doc.setTextColor(41, 128, 185);
+        doc.text('Your Journal Entries', 14, 20);
+      } else {
+        doc.setFontSize(18);
+        doc.setTextColor(41, 128, 185);
+        doc.text('Your Journal Entries', 14, currentY);
+      }
+      
+      if (journalData && journalData.length > 0) {
+        // Process each journal entry
+        let y = doc.lastAutoTable ? doc.lastAutoTable.finalY + 30 : currentY + 10;
+        
+        for (const entry of journalData) {
+          // Check if we need a new page
+          if (y > 250) {
+            doc.addPage();
+            y = 20;
+          }
+          
+          const date = new Date(entry.created_at).toLocaleDateString();
+          doc.setFontSize(14);
+          doc.setTextColor(52, 73, 94);
+          doc.text(`${entry.title || 'Untitled'} (${date})`, 14, y);
+          
+          doc.setFontSize(12);
+          doc.setTextColor(80, 80, 80);
+          
+          // Split long content into multiple lines
+          const textLines = doc.splitTextToSize(entry.content || 'No content', 180);
+          
+          // Check if remaining space is enough for content
+          if (y + 8 + (textLines.length * 7) > 280) {
+            doc.addPage();
+            y = 20;
+            doc.setFontSize(14);
+            doc.setTextColor(52, 73, 94);
+            doc.text(`${entry.title || 'Untitled'} (${date}) - continued`, 14, y);
+            doc.setFontSize(12);
+            doc.setTextColor(80, 80, 80);
+            y += 8;
+          } else {
+            y += 8;
+          }
+          
+          doc.text(textLines, 14, y);
+          y += (textLines.length * 7) + 15;
+        }
+      } else {
+        const y = doc.lastAutoTable ? doc.lastAutoTable.finalY + 30 : currentY + 10;
+        doc.setFontSize(12);
+        doc.setTextColor(100, 100, 100);
+        doc.text('No journal entries found.', 14, y);
+      }
+      
+      // Save the PDF
+      doc.save('mindscribe-data.pdf');
+      
     } catch (error) {
       console.error('Error exporting data:', error);
       alert('Failed to export data. Please try again.');
