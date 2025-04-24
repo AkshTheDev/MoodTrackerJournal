@@ -1,17 +1,14 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 
-// https://vite.dev/config/
+// https://vitejs.dev/config/
 export default defineConfig({
   plugins: [react()],
-  server: {
-    open: true,
-    hmr: {
-      overlay: true
-    }
-  },
+  base: process.env.NODE_ENV === 'production' ? '/MoodTrackerJournal/' : '/',
   build: {
     outDir: 'dist',
+    assetsDir: 'assets',
+    emptyOutDir: true,
     sourcemap: true,
     rollupOptions: {
       output: {
@@ -21,9 +18,6 @@ export default defineConfig({
         }
       }
     }
-  },
-  define: {
-    'process.env': process.env
   },
   resolve: {
     alias: {

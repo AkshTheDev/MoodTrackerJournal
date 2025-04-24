@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback } from 'react';
 import './MoodSelector.css';
 
 const MOODS = [
@@ -9,17 +9,15 @@ const MOODS = [
 ];
 
 function MoodSelector({ selectedMood, onMoodSelect }) {
-  const [intensity, setIntensity] = useState(5);
-
   const handleKeyPress = useCallback((event, mood) => {
     if (event.key === 'Enter' || event.key === ' ') {
       event.preventDefault();
-      onMoodSelect({ ...mood, intensity });
+      onMoodSelect(mood);
     }
-  }, [onMoodSelect, intensity]);
+  }, [onMoodSelect]);
 
   const handleMoodClick = (mood) => {
-    onMoodSelect({ ...mood, intensity });
+    onMoodSelect(mood);
   };
 
   return (
@@ -46,21 +44,6 @@ function MoodSelector({ selectedMood, onMoodSelect }) {
           </div>
         ))}
       </div>
-      
-      {selectedMood && (
-        <div className="intensity-selector">
-          <label htmlFor="intensity">Intensity: {intensity}/10</label>
-          <input
-            type="range"
-            id="intensity"
-            min="1"
-            max="10"
-            value={intensity}
-            onChange={(e) => setIntensity(parseInt(e.target.value))}
-            className="intensity-slider"
-          />
-        </div>
-      )}
     </div>
   );
 }

@@ -362,5 +362,26 @@ export const uploadProfileImage = async (file, userId) => {
   }
 };
 
+export async function deleteMoodEntry(entryId) {
+  try {
+    console.log('Deleting mood entry:', entryId);
+    const { error } = await supabase
+      .from('mood_entries')
+      .delete()
+      .eq('id', entryId);
+
+    if (error) {
+      console.error('Error deleting mood entry:', error);
+      throw error;
+    }
+
+    console.log('Successfully deleted mood entry:', entryId);
+    return { success: true };
+  } catch (error) {
+    console.error('Failed to delete mood entry:', error);
+    throw error;
+  }
+}
+
 // Export the supabase instance
 export { supabase };

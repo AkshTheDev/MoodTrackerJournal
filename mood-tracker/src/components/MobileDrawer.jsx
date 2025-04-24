@@ -13,9 +13,6 @@ function MobileDrawer({ isOpen, onClose }) {
         </div>
         <nav className="drawer-nav">
           <NavLink to="/" end onClick={onClose}>
-            Home
-          </NavLink>
-          <NavLink to="/log-mood" onClick={onClose}>
             Log Mood
           </NavLink>
           <NavLink to="/journal" onClick={onClose}>

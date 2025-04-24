@@ -1,7 +1,6 @@
 import React, { useState, Suspense } from 'react';
 import { BrowserRouter as Router, Routes, Route, NavLink } from 'react-router-dom';
 import HomeLayout from './layout/HomeLayout';
-import LogMoodLayout from './layout/LogMoodLayout';
 import JournalLayout from './layout/JournalLayout';
 import HistoryLayout from './layout/HistoryLayout';
 import SettingsLayout from './layout/SettingsLayout';
@@ -24,9 +23,6 @@ function AppContent() {
         <div className="logo">MindScribe</div>
         <div className="nav-links">
           <NavLink to="/" end>
-            Home
-          </NavLink>
-          <NavLink to="/log-mood">
             Log Mood
           </NavLink>
           <NavLink to="/journal">
@@ -59,12 +55,7 @@ function AppContent() {
             <Route path="/login" element={<Login />} />
             <Route path="/" element={
               <ProtectedRoute>
-                <HomeLayout darkMode={isDarkMode} />
-              </ProtectedRoute>
-            } />
-            <Route path="/log-mood" element={
-              <ProtectedRoute>
-                <LogMoodLayout />
+                <HomeLayout />
               </ProtectedRoute>
             } />
             <Route path="/journal" element={

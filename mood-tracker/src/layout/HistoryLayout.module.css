@@ -1,7 +1,8 @@
 .container {
   max-width: 1200px;
   margin: 2rem auto;
-  padding: 0 2rem;
+  padding: 2rem;
+  transition: opacity 0.3s ease;
 }
 
 .header {
@@ -15,12 +16,23 @@
 }
 
 .select {
-  padding: 0.75rem;
-  border: 2px solid var(--accent-sage);
+  padding: 0.5rem;
   border-radius: 0.5rem;
-  background: var(--background-color);
+  border: 1px solid var(--border-color);
+  background-color: var(--background-color);
   color: var(--text-color);
   cursor: pointer;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.select:hover {
+  border-color: var(--primary-color);
+}
+
+.select:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 2px var(--primary-color-transparent);
 }
 
 .dateRangePicker {
@@ -162,7 +174,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 1rem;
+  margin-bottom: 0.5rem;
 }
 
 .entryDate {
@@ -254,6 +266,77 @@
 
 .linkedJournal:hover {
   text-decoration: underline;
+}
+
+.activityHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.activityHeader h4 {
+  margin: 0;
+  font-size: 1.1rem;
+  color: var(--text-primary);
+}
+
+.entryActions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.deleteButton {
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+  border: 1px solid var(--border-color);
+  background-color: var(--background-color);
+  color: var(--text-color);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.deleteButton:hover {
+  background-color: var(--error-color);
+  color: white;
+  border-color: var(--error-color);
+}
+
+.deleteButton:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--error-color-transparent);
+}
+
+/* Loading States */
+.loading {
+  opacity: 0.7;
+  pointer-events: none;
+}
+
+.loadingSpinner {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+/* Accessibility Improvements */
+@media (prefers-reduced-motion: reduce) {
+  .container,
+  .select,
+  .deleteButton {
+    transition: none;
+  }
+}
+
+/* High Contrast Mode Support */
+@media (forced-colors: active) {
+  .select:focus,
+  .deleteButton:focus {
+    outline: 2px solid CanvasText;
+    outline-offset: 2px;
+  }
 }
 
 @media (max-width: 768px) {

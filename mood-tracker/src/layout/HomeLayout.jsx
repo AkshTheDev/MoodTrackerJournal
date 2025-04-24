@@ -1,173 +1,154 @@
 import React, { useState, useEffect } from 'react';
-import { MoodLineChart, MoodDistributionChart, processMoodData } from '../components/MoodChart';
+import { useNavigate } from 'react-router-dom';
 import MoodSelector from '../components/MoodSelector';
-import LoadingSpinner from '../components/LoadingSpinner';
-import { getDailyQuote } from '../api/quoteService';
-import { saveMoodEntry, getMoodEntries } from '../lib/SupabaseClient';
+import { saveMoodEntry } from '../lib/SupabaseClient';
 import { useAuth } from '../context/AuthContext';
+import { getRandomQuote } from '../api/quoteService';
 import style from './HomeLayout.module.css';
+
+const ACTIVITIES = [
+  'Exercise', 'Work', 'Social', 'Family',
+  'Hobby', 'Reading', 'Gaming', 'Music',
+  'Nature', 'Shopping', 'Cooking', 'Movies',
+  'Learning', 'Travel', 'Meditation', 'Other'
+];
 
 function HomeLayout() {
   const [selectedMood, setSelectedMood] = useState(null);
-  const [journalEntry, setJournalEntry] = useState('');
-  const [quote, setQuote] = useState(null);
-  const [recentMoods, setRecentMoods] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [isSaving, setIsSaving] = useState(false);
+  const [intensity, setIntensity] = useState(5);
+  const [activities, setActivities] = useState([]);
+  const [note, setNote] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [quote, setQuote] = useState({ content: '', author: '' });
+  const navigate = useNavigate();
   const { user } = useAuth();
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        // Get last 7 days data in ISO format with timezone
-        const endDate = new Date();
-        const startDate = new Date();
-        startDate.setDate(startDate.getDate() - 7);
-
-        // Check if user exists before making API calls
-        if (!user) {
-          setIsLoading(false);
-          return;
-        }
-
-        const [quoteData, moodData] = await Promise.all([
-          getDailyQuote(),
-          getMoodEntries(
-            startDate.toISOString(),
-            endDate.toISOString(),
-            user.id
-          )
-        ]);
-        
-        setQuote(quoteData);
-        setRecentMoods(moodData);
-      } catch (error) {
-        console.error('Error fetching data:', error);
-      } finally {
-        setIsLoading(false);
-      }
+    const fetchQuote = async () => {
+      const newQuote = await getRandomQuote();
+      setQuote(newQuote);
     };
-
-    fetchData();
-  }, [user]);
+    fetchQuote();
+  }, []);
 
   const handleMoodSelect = (mood) => {
     setSelectedMood(mood.name);
+  };
+
+  const toggleActivity = (activity) => {
+    setActivities(prev => 
+      prev.includes(activity)
+        ? prev.filter(a => a !== activity)
+        : [...prev, activity]
+    );
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!selectedMood) return;
 
-    setIsSaving(true);
+    setIsSubmitting(true);
     try {
-      const entry = await saveMoodEntry({
+      await saveMoodEntry({
         mood: selectedMood,
-        note: journalEntry,
+        intensity,
+        activities,
+        note,
         date: new Date().toISOString(),
-        user_id: user.id,
-        activities: [],
-        intensity: 5 // Default intensity
+        user_id: user.id
       });
 
-      setRecentMoods(prev => [entry[0], ...prev]);
-      setSelectedMood(null);
-      setJournalEntry('');
+      navigate('/history');
     } catch (error) {
       console.error('Error saving mood:', error);
       alert('Failed to save your mood. Please try again.');
     } finally {
-      setIsSaving(false);
+      setIsSubmitting(false);
     }
   };
 
-  if (isLoading) {
-    return <LoadingSpinner />;
-  }
-
-  // Handle case where recentMoods is undefined
-  const { lineChartData, doughnutChartData } = recentMoods && recentMoods.length 
-    ? processMoodData(recentMoods) 
-    : { 
-        lineChartData: { 
-          labels: [], 
-          datasets: [{ label: 'Mood Level', data: [], intensity: [], borderColor: 'rgb(174, 213, 129)', backgroundColor: 'rgba(174, 213, 129, 0.2)', tension: 0.3 }] 
-        }, 
-        doughnutChartData: { 
-          labels: ['Happy', 'Neutral', 'Sad', 'Angry'], 
-          datasets: [{ data: [0, 0, 0, 0], backgroundColor: ['#FFF9C4', '#C8E6C9', '#B3E5FC', '#FFCDD2'] }] 
-        } 
-      };
-
   return (
     <div className={style.container}>
-      <section className={style.quoteSection}>
-        <blockquote className={style.quote}>
-          {quote?.content || "Every day is a new beginning."}
-          <footer className={style.quoteAuthor}>— {quote?.author || "Unknown"}</footer>
-        </blockquote>
-      </section>
+      {quote.content && (
+        <section className={style.quoteSection}>
+          <blockquote className={style.quote}>
+            {quote.content}
+            <footer className={style.quoteAuthor}>— {quote.author}</footer>
+          </blockquote>
+        </section>
+      )}
 
-      <section className={style.moodSection}>
-        <h2>How are you feeling?</h2>
-        <MoodSelector 
-          selectedMood={selectedMood} 
-          onMoodSelect={handleMoodSelect} 
-        />
-        
-        <form onSubmit={handleSubmit} className={style.moodForm}>
-          <textarea
-            value={journalEntry}
-            onChange={(e) => setJournalEntry(e.target.value)}
-            placeholder="What's on your mind?"
-            className={style.textArea}
+      <form onSubmit={handleSubmit} className={style.form}>
+        <section className={style.section}>
+          <h2>How are you feeling?</h2>
+          <MoodSelector 
+            selectedMood={selectedMood} 
+            onMoodSelect={handleMoodSelect}
           />
-          <button 
-            type="submit" 
-            className={style.submitButton}
-            disabled={!selectedMood || isSaving}
-          >
-            {isSaving ? 'Saving...' : 'Save Entry'}
-          </button>
-        </form>
-      </section>
+        </section>
 
-      <section className={style.chartsSection}>
-        <div className={style.chartCard}>
-          <h3>Weekly Overview</h3>
-          <div className={style.chart}>
-            <MoodLineChart data={lineChartData} />
-          </div>
-        </div>
-
-        <div className={style.chartCard}>
-          <h3>Mood Distribution</h3>
-          <div className={style.chart}>
-            <MoodDistributionChart data={doughnutChartData} />
-          </div>
-        </div>
-      </section>
-
-      <section className={style.recentSection}>
-        <h3>Recent Entries</h3>
-        <div className={style.recentEntries}>
-          {recentMoods.slice(0, 5).map((entry) => (
-            <div key={entry.id || `${entry.date}-${entry.mood}`} className={style.entryCard}>
-              <div className={style.entryHeader}>
-                <span className={style.entryDate}>
-                  {new Date(entry.date).toLocaleDateString()}
-                </span>
-                <span className={style.entryMood}>
-                  {entry.mood === 'Happy' ? '😄' :
-                   entry.mood === 'Neutral' ? '😐' :
-                   entry.mood === 'Sad' ? '😢' : '😡'}
-                </span>
+        {selectedMood && (
+          <>
+            <section className={style.section}>
+              <h3>How intense is this feeling?</h3>
+              <div className={style.intensitySlider}>
+                <input
+                  type="range"
+                  min="1"
+                  max="10"
+                  value={intensity}
+                  onChange={(e) => setIntensity(Number(e.target.value))}
+                  className={style.slider}
+                />
+                <div className={style.sliderLabels}>
+                  <span>Mild</span>
+                  <span>Moderate</span>
+                  <span>Strong</span>
+                </div>
+                <div className={style.intensityValue}>
+                  {intensity}/10
+                </div>
               </div>
-              {entry.note && <p className={style.entryNote}>{entry.note}</p>}
-            </div>
-          ))}
-        </div>
-      </section>
+            </section>
+
+            <section className={style.section}>
+              <h3>What have you been doing?</h3>
+              <div className={style.activitiesGrid}>
+                {ACTIVITIES.map(activity => (
+                  <button
+                    key={activity}
+                    type="button"
+                    className={`${style.activityButton} ${
+                      activities.includes(activity) ? style.active : ''
+                    }`}
+                    onClick={() => toggleActivity(activity)}
+                  >
+                    {activity}
+                  </button>
+                ))}
+              </div>
+            </section>
+
+            <section className={style.section}>
+              <h3>Any additional thoughts?</h3>
+              <textarea
+                value={note}
+                onChange={(e) => setNote(e.target.value)}
+                placeholder="Write about your thoughts and feelings..."
+                className={style.noteInput}
+              />
+            </section>
+
+            <button 
+              type="submit" 
+              className={style.submitButton}
+              disabled={isSubmitting}
+            >
+              {isSubmitting ? 'Saving...' : 'Save Entry'}
+            </button>
+          </>
+        )}
+      </form>
     </div>
   );
 }
